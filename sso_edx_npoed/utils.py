@@ -1,4 +1,8 @@
+# coding: utf-8
+
 import logging
+import requests
+from django.conf import settings
 
 from student.roles import (GlobalStaff, CourseStaffRole, CourseInstructorRole,
                            CourseCreatorRole)
@@ -87,3 +91,18 @@ def create_forum_roles_and_permissions_for_cours(course):
             if not r.permissions.filter(name=perm.name):
                 r.permissions.add(perm)
                 log.warning(u'Add permission {} for role {}.'.format(perm, r))
+
+
+def get_plp_flatpage(template_path='', flatpage_url=''):
+    """
+    подгрузка flatpage_or_include из plp
+    """
+    try:
+        r = requests.get('{}/flatpage/get-flatpage-or-include/'.format(settings.PLP_URL), params={
+            'template_path': template_path,
+            'flatpage_url': flatpage_url,
+        })
+        return r.json()['data']
+    except (requests.RequestException, ValueError, KeyError):
+        return ''
+
