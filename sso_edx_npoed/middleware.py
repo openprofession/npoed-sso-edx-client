@@ -3,6 +3,7 @@
 import re
 import os.path
 import requests
+import urllib
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -188,13 +189,19 @@ class DemoCourseAutoEnroll(object):
         course_pattern = re.compile(r'/course-v1:(\w+)\+(\w+)\+(\w+)/|$')
         check_course = re.search(course_pattern, current_url)
 
-        university = check_course.group(1)
-        course = check_course.group(2)
-        session = check_course.group(3)
+        university = check_course and check_course.group(1)
+        course = check_course and check_course.group(2)
+        session = check_course and check_course.group(3)
 
         is_demo_course = session == "demo"
         if check_course and is_demo_course:
             user = request.user
+            if not user.is_authenticated():
+                return redirect('{}{}?next={}'.format(
+                    settings.SSO_NPOED_URL,
+                    getattr(settings, 'SSO_LANDING_REGISTRATION_URL', '/register/landing/'),
+                    urllib.quote('{}://{}{}'.format(request.scheme, request.get_host(), current_url))
+                ))
             course_id = 'course-v1:%s+%s+%s' % (university, course, session)
             try:
                 course_key = CourseKey.from_string(course_id)
