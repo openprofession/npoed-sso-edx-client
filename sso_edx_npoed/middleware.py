@@ -123,6 +123,13 @@ class PLPRedirection(object):
                 os.path.join(settings.PLP_URL, 'course', course.org, course.course) + '?session=%s' % course.run
             )
 
+        r_url = re.compile(r'^/courses/(.*)/enroll_staff').match(current_url)
+        if r_url:
+            course = CourseKey.from_string(r_url.groups()[0])
+            return redirect(
+                os.path.join(settings.PLP_URL, 'course', course.org, course.course)
+            )
+
         is_courses_list_or_about_page = False
         r = re.compile(r'^/courses/%s/about' % settings.COURSE_ID_PATTERN)
 
