@@ -76,6 +76,11 @@ class NpoedBackend(BaseOAuth2):
                     host = _host
             base_url = '{}://{}'.format(scheme, host)
             next_url = urllib.quote('{}{}'.format(base_url, next_url))
+            if 'demo/' in next_url:
+                return '{}&auth_entry=demo&next_url={}'.format(
+                    super(NpoedBackend, self).auth_url(),
+                    next_url,
+                )
             return '{}&auth_entry={}&next_url={}'.format(
                 super(NpoedBackend, self).auth_url(),
                 self.data.get('auth_entry', 'login'),
