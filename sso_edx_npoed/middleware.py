@@ -204,11 +204,7 @@ class DemoCourseAutoEnroll(object):
         if check_course and is_demo_course:
             user = request.user
             if not user.is_authenticated():
-                return redirect('{}{}?next={}'.format(
-                    settings.SSO_NPOED_URL,
-                    getattr(settings, 'SSO_LANDING_REGISTRATION_URL', '/register/landing/'),
-                    urllib.quote('{}://{}{}'.format(request.scheme, request.get_host(), current_url))
-                ))
+                return
             course_id = 'course-v1:%s+%s+%s' % (university, course, session)
             try:
                 course_key = CourseKey.from_string(course_id)

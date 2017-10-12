@@ -77,8 +77,13 @@ class NpoedBackend(BaseOAuth2):
             base_url = '{}://{}'.format(scheme, host)
             next_url = urllib.quote('{}{}'.format(base_url, next_url))
             if 'demo/' in next_url:
-                return '{}&auth_entry=demo&next_url={}'.format(
+                params = 'auth_entry=demo'
+                if '?' in urllib.unquote(next_url):
+                    custom_tags = urllib.unquote(next_url).split('?')[-1]
+                    params = '{}&{}'.format(params, custom_tags)
+                return '{}&{}&next_url={}'.format(
                     super(NpoedBackend, self).auth_url(),
+                    params,
                     next_url,
                 )
             return '{}&auth_entry={}&next_url={}'.format(
