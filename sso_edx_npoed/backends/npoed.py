@@ -1,5 +1,6 @@
 import logging
 import urllib
+import urlparse
 
 from django.conf import settings
 
@@ -78,9 +79,14 @@ class NpoedBackend(BaseOAuth2):
             next_url = urllib.quote('{}{}'.format(base_url, next_url))
             if 'demo/' in next_url:
                 params = 'auth_entry=demo'
-                if '?' in urllib.unquote(next_url):
-                    custom_tags = urllib.unquote(next_url).split('?')[-1]
+                try:
+                    custom_tags = urlparse.urlparse(
+                        dict(urlparse.parse_qsl(urlparse.urlparse(urllib.unquote(next_url)).query))['next']
+                    ).query
+                    assert custom_tags
                     params = '{}&{}'.format(params, custom_tags)
+                except:
+                    pass
                 return '{}&{}&next_url={}'.format(
                     super(NpoedBackend, self).auth_url(),
                     params,
