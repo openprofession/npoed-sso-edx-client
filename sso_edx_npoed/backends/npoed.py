@@ -80,9 +80,7 @@ class NpoedBackend(BaseOAuth2):
             if 'demo/' in next_url:
                 params = 'auth_entry=demo'
                 try:
-                    custom_tags = urlparse.urlparse(
-                        dict(urlparse.parse_qsl(urlparse.urlparse(urllib.unquote(next_url)).query))['next']
-                    ).query
+                    custom_tags = urlparse.urlparse(urllib.unquote(next_url)).query
                     assert custom_tags
                     params = '{}&{}'.format(params, custom_tags)
                 except:
