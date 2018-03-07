@@ -29,6 +29,8 @@ class SeamlessAuthorization(object):
         backend = settings.SSO_NPOED_BACKEND_NAME
         current_url = request.get_full_path()
 
+        if '/admin/' in current_url:
+            return None
         # Special URLs (SSO-299)
         if '/handler_noauth/' in current_url:
             return None

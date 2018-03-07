@@ -6,6 +6,7 @@ from django.conf import settings
 
 from social.utils import handle_http_errors
 from social.backends.oauth import BaseOAuth2
+#from social_core.backends.oauth import BaseOAuth2
 
 log = logging.getLogger(__name__)
 
@@ -20,7 +21,7 @@ DEFAULT_AUTH_PIPELINE = (
     'social.pipeline.user.get_username',
     'third_party_auth.pipeline.set_pipeline_timeout',
     'sso_edx_npoed.pipeline.ensure_user_information',
-    'sso_edx_npoed.common_pipeline.try_to_set_password',
+    #'sso_edx_npoed.common_pipeline.try_to_set_password',
     'social.pipeline.user.create_user',
     'social.pipeline.social_auth.associate_user',
     'social.pipeline.social_auth.load_extra_data',
@@ -147,6 +148,22 @@ class NpoedBackend(BaseOAuth2):
         kwargs.update(data)
         kwargs.update({'response': data, 'backend': self})
         return self.strategy.authenticate(*args, **kwargs)
+
+    def validate_state(self):
+        """Validate state value. Raises exception on error, returns state
+        value if valid."""
+        if not self.STATE_PARAMETER and not self.REDIRECT_STATE:
+            return None
+        state = self.get_session_state()
+        request_state = self.get_request_state()
+       # if not request_state:
+       #     raise AuthMissingParameter(self, 'state')
+       # elif not state:
+       #     raise AuthStateMissing(self, 'state')
+       # elif not request_state == state:
+       #     raise AuthStateForbidden(self)
+       # else:
+        return state
 
 
 class NpoedBackendCMS(NpoedBackend):
